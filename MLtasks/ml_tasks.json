@@ -93,6 +93,21 @@
             }
         },
         {
+            "series": "Linear Regression",
+            "level": 5,
+            "id": "linreg_lvl5_normal_equation",
+            "algorithm": "Linear Regression (Matrix Solution)",
+            "description": "Solve linear regression using the normal equation.",
+            "interface_protocol": "pytorch_task_v1",
+            "requirements": {
+                "math": "Include normal equation formula: $\\theta = (X^T X)^{-1} X^T y$.",
+                "data":"Two Gaussian clusters; standardized features.",
+                "implementation": "Compute theta = (X^T X)^{-1} X^T y using torch.linalg; compare to GD solution.",
+                "validation": "Parameters close to GD solution; R2 > 0.9.",
+                "output": "Include condition number of X^T X in outputs['metrics']['condition_number']."
+            }
+        },
+        {
             "series": "Logistic Regression",
             "level": 1,
             "id": "logreg_lvl1_binary_raw",
@@ -148,6 +163,50 @@
                 "implementation": "Compute ECE (Expected Calibration Error) manually; optimize threshold for F1.",
                 "visualization": "Reliability diagram + ROC curve.",
                 "validation": "ECE decreases after calibration step (compare before/after)."
+            }
+        },
+        {
+            "series": "Logistic Regression",
+            "level": 5,
+            "id": "logreg_lvl5_bce",
+            "algorithm": "Logistic Regression (Binary Cross-Entropy)",
+            "description": "Implement binary cross-entropy loss in logistic regression.",
+            "interface_protocol": "pytorch_task_v1",
+            "requirements": {
+                "math": "Include BCE formula: $-\\frac{1}{N}\\sum_{i=1}^N [y_i \\log(p_i) + (1-y_i) \\log(1-p_i)]$.",
+                "data": "Two Gaussian clusters; standardized features.",
+                "implementation": "Use BCE loss in training loop; compare to manual log-loss implementation.",
+                "validation": "BCE loss decreases and matches manual log-loss within tolerance.",
+                "output": "Report final BCE loss and accuracy in outputs['metrics']."
+            }
+        },
+        {
+            "series": "Logistic Regression",
+            "level": 6,
+            "id": "logreg_lvl6_l2reg",
+            "algorithm": "Logistic Regression (L2 Regularization)",
+            "description": "Implement L2 regularization in logistic regression; compare with unregularized version.",
+            "interface_protocol": "pytorch_task_v1",
+            "requirements": {
+                "data": "Real dataset: sklearn breast cancer or similar.",
+                "implementation": "Add L2 penalty to loss; tune regularization strength.",
+                "validation": "Regularized model has better val F1 than unregularized.",
+                "output": "Include regularization strength and corresponding metrics in outputs['metrics']['l2_reg_strength']."
+            }
+        },
+        {
+            "series": "Polynomial Regression",
+            "level": 1,
+            "id": "polreg_lvl1_sgd",
+            "algorithm": "Polynomial Regression (Stochastic Gradient Descent)",
+            "description": "Implement SGD for polynomial regression; compare with closed-form solution.",
+            "interface_protocol": "pytorch_task_v1",
+            "requirements": {
+                "math": "Include SGD update rule and learning rate schedule.",
+                "data": "Nonlinear synthetic: y = x+ x^2 + x^3 + noise; manual poly features.",
+                "implementation": "SGD loop with shuffling; learning rate decay.",
+                "validation": "SGD solution close to normal equation solution; R2 > 0.9.",
+                "output": "Report final parameters, R2, and training time in outputs['metrics']."
             }
         },
         {
