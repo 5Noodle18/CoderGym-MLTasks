@@ -1,6 +1,9 @@
 """
 Binary Logistic Regression with Manual Gradients (Raw Tensors)
 No autograd, manual sigmoid, manual gradient descent.
+Compare to PyTorch's built-in BCE loss and optimizers to validate correctness.
+This task also reduces the amount of epochs and learning rate compared to logreg_lvl1_binary_raw while increasing the number of samples
+to make it more challenging to converge, but still achievable with manual gradients.
 """
 
 import os
@@ -34,7 +37,7 @@ def make_dataloaders(batch_size=32, val_ratio=0.2):
     Class 0: centered at (-1, -1)
     Class 1: centered at (1, 1)
     """
-    n_samples = 400
+    n_samples = 1000
     n_class = n_samples // 2
     
     # Generate two Gaussian clusters with reduced variance for better separability
@@ -148,6 +151,27 @@ def train(model, train_loader, val_loader, device, learning_rate=0.1, epochs=100
     
     return model
 
+def bce_loss(y_pred, y_true):
+    """Binary cross-entropy loss - Manual implementation
+    
+    BCE = -1/N * SUM[y*log(σ(z)) + (1-y)*log(1-σ(z))]
+    """
+    eps = 1e-7
+    loss = -torch.mean(
+        y_true * torch.log(y_pred + eps) +
+        (1 - y_true) * torch.log(1 - y_pred + eps)
+    )
+    return loss
+
+def manual_log_loss(y_pred, y_true):
+    """Compute log loss manually"""
+
+    eps = 1e-7
+    term1 = y_true * torch.log(y_pred + eps)
+    term2 = (1 - y_true) * torch.log(1 - y_pred + eps)
+
+    return -torch.mean(term1 + term2)
+
 def evaluate_loss(model, data_loader, device):
     """Compute average log loss"""
     model.eval()
@@ -215,6 +239,7 @@ def evaluate(model, data_loader, device):
     metrics = {
         'mse': mse,
         'r2': r2,
+        "bce_loss": bce.item(),
         'accuracy': accuracy,
         'precision': precision.item(),
         'recall': recall.item(),
@@ -257,8 +282,8 @@ def save_artifacts(model, metrics, output_dir):
 if __name__ == '__main__':
     # Configuration
     OUTPUT_DIR = '/Developer/AIserver/output/tasks/logreg_lvl1_binary_raw'
-    LEARNING_RATE = 0.5
-    EPOCHS = 1000
+    LEARNING_RATE = 0.1
+    EPOCHS = 500
     BATCH_SIZE = 32
     
     print("=" * 60)
@@ -292,6 +317,17 @@ if __name__ == '__main__':
     print(f"\nTraining for {EPOCHS} epochs...")
     model = train(model, train_loader, val_loader, device, 
                   learning_rate=LEARNING_RATE, epochs=EPOCHS)
+    
+    # Validate log loss consistency
+    print("\nValidating log loss consistency on validation set...")
+    y_pred = model(torch.FloatTensor(X_val).to(device))
+    y_true = torch.FloatTensor(y_val).unsqueeze(1).to(device)
+    bce = bce_loss(y_pred, y_true)
+    manual = manual_log_loss(y_pred, y_true)
+    print("BCE:", bce.item())
+    print("Manual Log Loss:", manual.item())
+    assert abs(bce.item() - manual.item()) < 1e-5 , "Log loss implementations do not match!"
+    print("✓ Log loss consistency validated.")
 
     # Evaluate on training set
     print("\n" + "-" * 60)

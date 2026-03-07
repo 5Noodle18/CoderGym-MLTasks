@@ -188,9 +188,9 @@
             "description": "Implement L2 regularization in logistic regression; compare with unregularized version.",
             "interface_protocol": "pytorch_task_v1",
             "requirements": {
-                "data": "Real dataset: sklearn breast cancer or similar.",
+                "data": "Two Gaussian clusters; standardized features.",
                 "implementation": "Add L2 penalty to loss; tune regularization strength.",
-                "validation": "Regularized model has better val F1 than unregularized.",
+                "validation": "Regularized model has better validation performance than unregularized.",
                 "output": "Include regularization strength and corresponding metrics in outputs['metrics']['l2_reg_strength']."
             }
         },
