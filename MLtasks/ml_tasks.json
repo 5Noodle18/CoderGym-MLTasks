@@ -630,6 +630,60 @@
             }
         },
         {
+            "series": "Neural Networks (MLP)",
+            "level": 5,
+            "id": "mlp_lvl5_residual_skip",
+            "algorithm": "MLP (Residual Skip Connections)",
+            "description": "Deep MLP using residuals to skip connections on tabular data; demonstrates gradient highway effect vs vanilla deep MLP.",
+            "interface_protocol": "pytorch_task_v1",
+            "requirements": {
+                "implementation": "ResidualBlock adds shortcut(x) to block output; use projection linear when in_dim != out_dim; stack 3+ blocks.",
+                "validation": "Val accuracy > 0.75 and macro-F1 > 0.70; loss decreases monotonically; no severe overfitting (val acc >= train acc - 0.15).",
+                "output": "Save loss curve plot 'mlp_lvl5_loss.png'; return metrics dict with train/val accuracy and F1."
+            }
+        },
+        {
+            "series": "Neural Networks (MLP)",
+            "level": 6,
+            "id": "mlp_lvl6_cyclical_lr",
+            "algorithm": "MLP (Cyclical Learning Rate)",
+            "description": "MLP classifier trained with Smith (2017) CyclicLR scheduler; visualizes sawtooth loss curve and per-batch LR schedule.",
+            "interface_protocol": "pytorch_task_v1",
+            "requirements": {
+                "implementation": "Use CyclicLR stepped per batch (not per epoch); SGD with momentum preferred over Adam; step_size set to 2x steps-per-epoch.",
+                "validation": "Val accuracy > 0.75; LR range confirmed in history (max - min > 1e-5); loss at final epoch less than loss at epoch 1.",
+                "output": "Save 'mlp_lvl6_clr.png' with two subplots: training loss curve (sawtooth signature) and per-batch LR schedule."
+            }
+        },
+        {
+            "series": "Neural Networks (MLP)",
+            "level": 7,
+            "id": "mlp_lvl7_multioutput_regression",
+            "algorithm": "MLP (Multi-Output Regression)",
+            "description": "Single MLP predicting multiple continuous targets simultaneously from shared hidden representations; reports per-target R2 alongside overall metrics.",
+            "interface_protocol": "pytorch_task_v1",
+            "requirements": {
+                "math": "Loss is mean over samples of per-sample squared error across all outputs: L = (1/N) sum ||y_i - y_hat_i||^2.",
+                "implementation": "Output layer has num_outputs units with no activation; MSELoss operates on (N, num_outputs) tensors; targets are correlated non-linear functions of shared inputs.",
+                "validation": "Overall val R2 > 0.85; all per-target val R2 > 0.70; overall val MSE < 1.0.",
+                "output": "Save 'mlp_lvl7_multioutput.png' with loss curve and one predicted-vs-true scatter per output; return per_target list of {mse, r2} in metrics dict."
+            }
+        },
+        {
+            "series": "Neural Networks (MLP)",
+            "level": 8,
+            "id": "mlp_lvl8_knowledge_distillation",
+            "algorithm": "MLP (Knowledge Distillation)",
+            "description": "Three-phase experiment: train large teacher, train small student on hard labels, train same small student via soft targets from teacher; compares all three on validation accuracy.",
+            "interface_protocol": "pytorch_task_v1",
+            "requirements": {
+                "math": "Distillation loss: L = alpha * CrossEntropy(logits_s, hard_y) + (1 - alpha) * T^2 * KLDiv(softmax(logits_s/T) || softmax(logits_t/T)).",
+                "implementation": "Teacher and student share same MLP class but differ in hidden_dims; temperature T and alpha are configurable; teacher frozen during distillation; scheduler stepped per batch.",
+                "validation": "Teacher val accuracy > 0.80; distilled student val accuracy > 0.75; distilled student accuracy >= hard-label student accuracy - 0.01.",
+                "output": "Save 'mlp_lvl8_distillation.png' with loss curves for all three models and validation accuracy bar chart; report parameter counts for teacher vs student; save metrics.json with all three model results."
+            }
+        },
+        {
             "series": "Convolutional Neural Networks",
             "level": 1,
             "id": "cnn_lvl1_from_scratch_conv",

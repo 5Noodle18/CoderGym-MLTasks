@@ -1,0 +1,40 @@
+{
+  "temperature": 4.0,
+  "alpha": 0.4,
+  "teacher": {
+    "train": {
+      "loss": 4.777271303617837e-05,
+      "accuracy": 1.0,
+      "f1": 1.0
+    },
+    "val": {
+      "loss": 4.3623761303024364e-05,
+      "accuracy": 1.0,
+      "f1": 1.0
+    }
+  },
+  "student_baseline": {
+    "train": {
+      "loss": 9.901785310112725e-05,
+      "accuracy": 1.0,
+      "f1": 1.0
+    },
+    "val": {
+      "loss": 9.103192060138099e-05,
+      "accuracy": 1.0,
+      "f1": 1.0
+    }
+  },
+  "student_distilled": {
+    "train": {
+      "loss": 3.624481259497483e-05,
+      "accuracy": 1.0,
+      "f1": 1.0
+    },
+    "val": {
+      "loss": 3.266618514317088e-05,
+      "accuracy": 1.0,
+      "f1": 1.0
+    }
+  }
+}
